@@ -23,6 +23,7 @@ package metricsservice
 import (
 	"time"
 
+	cfg "github.com/doitintl/kuberbs/pkg/config"
 	"github.com/doitintl/kuberbs/pkg/metrics"
 	"github.com/sirupsen/logrus"
 )
@@ -37,6 +38,7 @@ type MetricsSevrice struct {
 	doneHandler      metrics.DoneHandler
 	checkMetricsFunc metrics.CheckMetricsFunc
 	doneChan         chan bool
+	Config           *cfg.Config
 }
 
 // NewMetricsSevrice - create new MetricsSevrice struct
@@ -55,12 +57,12 @@ func (ms *MetricsSevrice) Start() {
 	delta := time.Until(ms.EndAt)
 	ms.doneChan = make(chan bool)
 	timeChan := time.NewTimer(delta).C
-	tickChan := time.NewTicker(time.Second * metrics.CheckMetricsInterval).C
+	tickChan := time.NewTicker(time.Second * time.Duration(ms.Config.CheckMetricsInterval)).C
 	for {
 		select {
 		case <-tickChan:
 			logrus.Debug("Tick Called")
-			rate, err := ms.checkMetricsFunc(ms.MetricName, ms.StartAt)
+			rate, err := ms.checkMetricsFunc(ms.MetricName, ms.StartAt, ms.Config.APIKey, ms.Config.AppKey)
 			if err != nil {
 				ms.logger.Fatal(err)
 			} else {

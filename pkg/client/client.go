@@ -21,9 +21,10 @@
 package client
 
 import (
+	cfg "github.com/doitintl/kuberbs/pkg/config"
 	"github.com/doitintl/kuberbs/pkg/controller"
 )
 
-func Run() {
-	controller.Start(nil)
+func Run(config *cfg.Config) {
+	controller.Start(config)
 }

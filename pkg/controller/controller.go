@@ -29,10 +29,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/derekparker/delve/pkg/config"
 	"github.com/doitintl/kuberbs/pkg/api/types/v1"
 	client_v1 "github.com/doitintl/kuberbs/pkg/clientset/v1"
+	cfg "github.com/doitintl/kuberbs/pkg/config"
 	"github.com/doitintl/kuberbs/pkg/deployment"
+	"github.com/doitintl/kuberbs/pkg/metrics/datadog"
 	"github.com/doitintl/kuberbs/pkg/metrics/metricsservice"
 	"github.com/doitintl/kuberbs/pkg/metrics/stackdriver"
 	"github.com/doitintl/kuberbs/pkg/utils"
@@ -70,12 +71,13 @@ type Controller struct {
 	clinetSet     *client_v1.V1Client
 	queue         workqueue.RateLimitingInterface
 	informer      cache.SharedIndexInformer
+	config        *cfg.Config
 	metricsSource string
 	watchPeriod   int
 }
 
 // Start - starts the controller
-func Start(conf *config.Config) {
+func Start(config *cfg.Config) {
 	var kubeClient kubernetes.Interface
 	_, err := rest.InClusterConfig()
 	if err != nil {
@@ -99,6 +101,7 @@ func Start(conf *config.Config) {
 	)
 
 	cd := newResourceController(kubeClient, deploymentsInformer, "deployment")
+	cd.config = config
 	deploymentsStopCh := make(chan struct{})
 	defer close(deploymentsStopCh)
 
@@ -267,6 +270,7 @@ func (c *Controller) processItem(newEvent Event) error {
 		}
 		et := time.Now().Add(time.Duration(c.watchPeriod) * time.Minute)
 		m := setWatcher(c.metricsSource, metricName, et, dp)
+		m.Config = c.config
 		go dp.StartWatch(*m)
 		return nil
 
@@ -379,6 +383,9 @@ func setWatcher(metricsSource string, metricName string, et time.Time, newDeploy
 	switch metricsSource {
 	case "stackdriver":
 		m.SetCheckMetricsFunc(stackdriver.CheckMetrics)
+		return &m
+	case "datadog":
+		m.SetCheckMetricsFunc(datadog.CheckMetrics)
 		return &m
 	default:
 		return &m

@@ -22,14 +22,21 @@ package main
 
 import (
 	c "github.com/doitintl/kuberbs/pkg/client"
+	cfg "github.com/doitintl/kuberbs/pkg/config"
 	"github.com/sirupsen/logrus"
 )
 
 var version string
 var buildDate string
+var config *cfg.Config
 
 func main() {
-	logrus.SetLevel(logrus.InfoLevel)
+	config, _ = cfg.NewConfig()
+	if config.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		logrus.SetLevel(logrus.InfoLevel)
+	}
 	formatter := &logrus.TextFormatter{
 		FullTimestamp: true,
 	}
@@ -40,5 +47,5 @@ func main() {
 		"Build Date": buildDate,
 	}).Info("kuberbs is starting")
 
-	c.Run()
+	c.Run(config)
 }

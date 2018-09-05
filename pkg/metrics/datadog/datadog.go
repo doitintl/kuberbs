@@ -18,10 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package metrics
+package datadog
 
-import "time"
+import (
+	"time"
 
-type ErrorRateHandler func(float64)
-type DoneHandler func(bool) error
-type CheckMetricsFunc func(MetricName string, startat time.Time, apiKey string, appKey string) (float64, error)
+	"github.com/sirupsen/logrus"
+	"github.com/zorkian/go-datadog-api"
+)
+
+func CheckMetrics(MetricName string, startat time.Time, apiKey string, appKey string) (float64, error) {
+	client := datadog.NewClient(apiKey, appKey)
+	startTime := time.Now().UTC().Add(time.Until(startat))
+	endTime := time.Now().UTC()
+
+	resp, err := client.QueryMetrics(startTime.Unix(), endTime.Unix(), MetricName)
+	if err != nil {
+		logrus.Error(err)
+		return 0, err
+	}
+	if len(resp) == 0 {
+		return 0, nil
+	}
+	errSum := float64(0)
+	for _, p := range resp[0].Points {
+		errSum = errSum + *p[1]
+	}
+	logrus.Debugf("errSum %d", errSum)
+	return float64(errSum) / endTime.Sub(startTime).Seconds(), nil
+
+}

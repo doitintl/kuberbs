@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  KUBERBS_CHECKMETRICSINTERVAL: "10"
+  KUBERBS_APIKEY: ""
+  KUBERBS_APPKEY: ""
+  KUBERBS_DEBUG: "false"
+kind: ConfigMap
+metadata:
+  labels:
+    app: kuberbs
+  name: kuberbs-config
+  namespace: kube-system
