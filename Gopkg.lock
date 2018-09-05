@@ -26,6 +26,14 @@
   revision = "de5bf2ad457846296e2031421a34e2568e304e35"
 
 [[projects]]
+  digest = "1:2209584c0f7c9b68c23374e659357ab546e1b70eec2761f03280f69a8fd23d77"
+  name = "github.com/cenkalti/backoff"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2ea60e5f094469f9e65adb9cd103795b73ae743e"
+  version = "v2.0.0"
+
+[[projects]]
   digest = "1:a2c1d0e43bd3baaa071d1b9ed72c27d78169b2b269f71c105ac4ba34b1be4a39"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -266,6 +274,14 @@
   pruneopts = "UT"
   revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
   version = "v1.0.1"
+
+[[projects]]
+  digest = "1:c3b0de6caf6049c904c0796477e3d17b39d0ec609e6adc8354d6dbe393667777"
+  name = "github.com/zorkian/go-datadog-api"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "05fc4ddce70eb5e917af1c4453fd50694ce10964"
+  version = "v2.13.0"
 
 [[projects]]
   branch = "master"
@@ -542,7 +558,7 @@
   input-imports = [
     "github.com/derekparker/delve/pkg/config",
     "github.com/sirupsen/logrus",
-    "golang.org/x/net/context",
+    "github.com/zorkian/go-datadog-api",
     "golang.org/x/oauth2/google",
     "google.golang.org/api/monitoring/v3",
     "k8s.io/api/apps/v1",

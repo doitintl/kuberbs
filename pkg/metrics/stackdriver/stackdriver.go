@@ -44,7 +44,7 @@ func CheckMetrics(MetricName string, startat time.Time) (float64, error) {
 
 }
 
-func readTimeSeriesValue(s *monitoring.Service, metricType string, startat time.Time) (float64, error) {
+func readTimeSeriesValue(s *monitoring.Service, metricType string, startat time.Time, apiKey string, appKey string) (float64, error) {
 	projectID, err := utils.ProjectName()
 	if err != nil {
 		logrus.Error(err)

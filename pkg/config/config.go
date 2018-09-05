@@ -18,10 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package metrics
+package config
 
-import "time"
+import "github.com/spf13/viper"
 
-type ErrorRateHandler func(float64)
-type DoneHandler func(bool) error
-type CheckMetricsFunc func(MetricName string, startat time.Time, apiKey string, appKey string) (float64, error)
+type Config struct {
+	AppKey               string
+	APIKey               string
+	Debug                bool
+	CheckMetricsInterval int
+}
+
+func setConfigDefaults() {
+	viper.SetDefault("AppKey", "")
+	viper.SetDefault("ApiKey", "")
+	viper.SetDefault("CheckMetricsInterval", 10)
+	viper.SetDefault("Debug", false)
+}
+
+func NewConfig() (*Config, error) {
+	viper.SetEnvPrefix("kuberbs")
+	viper.AutomaticEnv()
+	setConfigDefaults()
+	c := Config{
+		AppKey:               viper.GetString("appkey"),
+		APIKey:               viper.GetString("apikey"),
+		Debug:                viper.GetBool("debug"),
+		CheckMetricsInterval: viper.GetInt("checkmetricsinterval"),
+	}
+	return &c, nil
+}
