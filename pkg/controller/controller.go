@@ -328,6 +328,7 @@ func (c *Controller) loadDeployments() {
 						old := c.createOldDeployment(dp)
 						newDeployment := deployment.NewDeploymentController(c.client, old, dp, threshold)
 						m := setWatcher(c.metricsSource, metricName, t, newDeployment)
+						m.Config = c.config
 						deploymentWatchList := deployment.GetDeploymentWatchList()
 						deploymentWatchList.PushBack(newDeployment)
 						go newDeployment.StartWatch(*m)
