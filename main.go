@@ -27,7 +27,7 @@ import (
 )
 
 var version string
-var buildDate string
+var builddate string
 var config *cfg.Config
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 
 	logrus.WithFields(logrus.Fields{
 		"Version":    version,
-		"Build Date": buildDate,
+		"Build Date": builddate,
 	}).Info("kuberbs is starting")
 
 	c.Run(config)
