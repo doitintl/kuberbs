@@ -9,9 +9,9 @@ K8 deployment automatic rollback system
 
 If you just want to use KubeRBS (instead of building it from source yourself), please follow instructions in this section. You need a Kubernetes 1.10 or newer cluster.
 You can install Kuberbs on any Kubernetes cluster either on perm or in the cloud.
-Kuberbs supports metrcis from DataDog or Stackdriver
+Kuberbs supports metrics from DataDog or Stackdriver
 
-## GKE Specfifc Setup  
+## GKE Specific Setup  
 You'll also need the Google Cloud SDK.
 You can install the Google Cloud SDK (which also installs kubectl) [here](https://cloud.google.com/sdk).
 
@@ -54,13 +54,13 @@ gcloud iam service-accounts keys create key.json \
  
 **Create Kubernetes Secret**
 
-Get your GKE cluster credentaials with (replace *cluster_name* with your real GKE cluster name):
+Get your GKE cluster credentials with (replace *cluster_name* with your real GKE cluster name):
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME \
 --region $GCP_REGION \
 --project $PROJECT_ID
  
-## None GKE Specfifc Setup 
+## None GKE Specific Setup 
 Create a Kubernetes secret by running:
 
 ```
@@ -79,11 +79,11 @@ Change the example in `examples\kuberbs-example.yaml` to fit your needs
 
 Here are the configuration options
 
-  `watchperiod`  int - for how long to wtach a deployment
+  `watchperiod`  int - for how long to watch a deployment
   
-  `metricssource`  string - currently we  support stackdriver and datadog
+  `metricssource`  string - currently we support stackdriver and datadog
   
-  for each namespace that you would like to watch you can have mutiple deployments.
+  for each namespace that you would like to watch you can have multiple deployments.
   Each deployments must have a name, a metric and the threshold per second.
 
 Deploy your configuration file.
@@ -139,7 +139,7 @@ For example
 ```
 docker push gcr.io/$PROJECT_ID/kuberbs
 ```
-## GKE Specfifc Setup 
+## GKE Specific Setup 
  
 **Set Environment Variables**
 
@@ -176,13 +176,13 @@ gcloud iam service-accounts keys create key.json \
  
 **Create Kubernetes Secret**
 
-Get your GKE cluster credentaials with (replace *cluster_name* with your real GKE cluster name):
+Get your GKE cluster credentials with (replace *cluster_name* with your real GKE cluster name):
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME \
 --region $GCP_REGION \
 --project $PROJECT_ID
  
-## None GKE Specfifc Setup 
+## None GKE Specific Setup 
 
 Create a Kubernetes secret by running:
 
@@ -194,7 +194,7 @@ Deploy kuberbs by running
 
 kubectl apply -f deploy/.
 
-**Running kuberbs localy**
+**Running kuberbs locally**
 
 Make sure you can access your cluster
 
@@ -204,12 +204,12 @@ Make sure you can access your cluster
 
 `curl $APISERVER/api --header "Authorization: Bearer $TOKEN" --insecure`
 
-If you can access your cluster then you need to set up the credtials:
+If you can access your cluster then you need to set up the credentials:
 
 `echo $TOKEN >token`
 `tr -d '\n' <token >t`
 `sudo cp t /var/run/secrets/kubernetes.io/serviceaccount/token`
-ssh into one of the contatnesr in your cluster and get `/var/run/secrets/kubernetes.io/serviceaccount/ca.crt`. copy that file to your local `/var/run/secrets/kubernetes.io/serviceaccount/ca.crt`
+ssh into one of the containers in your cluster and get `/var/run/secrets/kubernetes.io/serviceaccount/ca.crt`. copy that file to your local `/var/run/secrets/kubernetes.io/serviceaccount/ca.crt`
 
 In the file `pkg/clinetset/v1/rbs` 
 replace `const RbsNameSpace = "kube-system"` with `const RbsNameSpace = "default"` 

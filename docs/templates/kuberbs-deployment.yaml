@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "kuberbs.fullname" . }}
+  namespace: kube-system
+  labels:
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kuberbs
+  template:
+      metadata:
+        labels:
+          app: kuberbs
+      spec:
+        priorityClassName: system-cluster-critical
+        serviceAccountName: default
+        containers:
+        - name: "kuberbs"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          volumeMounts:
+          - name: google-cloud-key
+            mountPath: /var/secrets/google
+          env:
+          - name: "KUBERBS_CHECKMETRICSINTERVAL"
+            valueFrom:
+              configMapKeyRef:
+                key: "KUBERBS_CHECKMETRICSINTERVAL"
+                name: "kuberbs-config"
+          - name: "KUBERBS_APIKEY"
+            valueFrom:
+              configMapKeyRef:
+                key: "KUBERBS_APIKEY"
+                name: "kuberbs-config"
+          - name: "KUBERBS_APPKEY"
+            valueFrom:
+              configMapKeyRef:
+                key: "KUBERBS_APPKEY"
+                name: "kuberbs-config"
+          - name: "KUBERBS_DEBUG"
+            valueFrom:
+              configMapKeyRef:
+                key: "KUBERBS_DEBUG"
+                name: "kuberbs-config"
+
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: {{ .Values.google_application_credentials }}
+
+        restartPolicy: Always
+        volumes:
+          - name: google-cloud-key
+            secret:
+              secretName: kuberbs-key
+
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kuberbs-clusterrolebinding
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
